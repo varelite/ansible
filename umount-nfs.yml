@@ -1,0 +1,24 @@
+#### Ansible Playbook to unmunt NFS share from multiple servers
+- name: Umount NFS on Remote Servers
+  hosts: test
+  become: true
+  remote_user: testuser
+  become_method: sudo
+  vars:
+     nfs_source: "testserver:/nfsshare"
+     mountpoint: "/opt/nfs"
+     fstype: "nfs4"
+
+  tasks:
+
+  - name: Umount NFS Share
+    mount:
+       path: "{{ mountpoint }}"
+       state: unmounted
+
+  - name: Remove entry from /etc/fstab
+    mount:
+       path: "{{ mountpoint }}"
+       src: "{{ nfs_source }}"
+       fstype: "{{ fstype }}"
+       state: absent
