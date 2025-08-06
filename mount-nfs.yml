@@ -1,0 +1,28 @@
+### Ansible playbook to mount NFS share on multiple servers
+- name: Mount NFS on Remote Servers
+  hosts: test
+  become: true
+  remote_user: testuser
+  become_method: sudo
+  vars:
+     nfs_source: "testserver:/nfsshare"
+     mountpoint: "/opt/nfs"
+     fstype: "nfs4"
+
+  tasks:
+
+  - name: Check if mount point exists or not
+    file:
+      path: "{{ mountpoint }}"
+      state: directory
+      owner: testuser
+      group: ipausers
+      mode: '755'
+
+  - name: Mount NFS Share and Add in /etc/fstab
+    mount:
+       path: "{{ mountpoint }}"
+       src: "{{ nfs_source }}"
+       fstype: "{{ fstype }}"
+       opts: "defaults"
+       state: mounted
